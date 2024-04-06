@@ -1,0 +1,7 @@
+{
+    "C_Cpp.default.compilerPath": "c:\\mingw64\\bin\\gcc.exe",
+    "cmake.configureOnOpen": false,
+    "files.associations": {
+        "intsafe.h": "c"
+    }
+}
