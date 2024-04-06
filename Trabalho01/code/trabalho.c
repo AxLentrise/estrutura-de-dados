@@ -42,6 +42,7 @@
 #define CLINE  "\33[2K\r"     // Padrões ANSI para manipular o terminal
 #define RESET  "\033[0m"      // Padrões ANSI para manipular o terminal
 #define BOLD   "\033[1m"      // Padrões ANSI para manipular o terminal
+
 #define RED    "\033[31m"     // Padrões ANSI para manipular o terminal
 #define GREEN  "\033[32m"     // Padrões ANSI para manipular o terminal
 #define YELLOW "\033[33m"     // Padrões ANSI para manipular o terminal
@@ -83,7 +84,7 @@ int checkNumbers(char* buffer) {
             dot_iterator++;
             continue;
         }
-        printf_s("%s%sInput not parsable.%s\n", BOLD, RED, RESET);
+        // printf_s("%s%sInput not parsable.%s\n", BOLD, RED, RESET);
         return 0;
     }
     return 1;
@@ -104,50 +105,24 @@ void addBook() {
         return;
     }
 
-    while(1) {
-        char buffer[8] = {0};
-        buffer[MAX-1] = '\0';
-
-        if(input_error_iterator) {
-            printf_s("%s%sFound input mismatch, retype. (errors to finish application: %d)%s\n",
-            BOLD,
-            input_error_iterator == 4 ? RED : YELLOW,
-            5-input_error_iterator,
-            RESET);
-        }
-
-        printf_s("Enter the book code: %s%s\n", YELLOW, RESET);
-        
-        if((fgets(buffer, sizeof(buffer), stdin)) == NULL) {
-            printf_s("%s%sError getting user input.%s\n", BOLD, RED, RESET);
-        }
-
-        if(checkNumbers(buffer)) {
-            input_error_iterator = 0;
-            sscanf_s(buffer, "%d", &sbook.code);
-            break;
-        } else {
-            input_error_iterator++;
-            if(input_error_iterator > 4) fclose(fptr); return;
-        }
-    }
+    
 
 
 } // End addBooks
 
 int main() {
-    Sleep(1);
+    fflush(stdin);
     int input_error_iterator = 0;
     int index_iterator = 0;
     int show_message = 0;
+    int command_unknow = 0;
+
     char short_buffer[3] = {0};
     char number_pressed = '\0';
     short_buffer[2] = '\0';
 
-
     while(1) {
         int safe_code = 0;
-        fflush(stdin);
 
         if(!show_message) {
             clearTerminal();
@@ -163,22 +138,69 @@ int main() {
             if(index_iterator == 2) {
                 printf_s("%s%sMax input size reached.%s\n", BOLD, YELLOW, RESET);
             }
+
+            if(command_unknow) {
+                printf_s("%s%sCommand not recognized.\n%s", BOLD, YELLOW, RESET);
+                command_unknow = 0;
+            }
             
             printf_s("%s%s---------- Library ----------%s\n\n", BOLD, AQUA, RESET);
             printf_s("%s%s[1]%s: Add new book;\n", BOLD, AQUA, RESET);
             printf_s("%s%s[ESC]%s: Finish application.\n\n", BOLD, PURPLE, RESET);
             show_message++;
         }
-        printf_s("%s%s%s>%s%s", CLINE, BOLD, AQUA, short_buffer, RESET);
         Sleep(1);
 
+        char* option_selected = "";
+
+        // if(checkNumbers(short_buffer)) {
+        //     sscanf_s(short_buffer, "%d", &number_pressed);
+        //     if(number_pressed == 1) option_selected = "addBook()";
+        // }
+
+        printf_s("%s%s%s> %s%s%s%s%s", CLINE, BOLD, AQUA, RESET, short_buffer);
+
+
         if(GetAsyncKeyState(ESC) == PRESSED) break;
+
+        if(GetAsyncKeyState(BACKSPACE) == PRESSED) {
+            short_buffer[index_iterator] = '\0';
+            if(index_iterator) {
+                index_iterator--;
+            }
+            continue;
+        }
+
+        // Even tho i can only add register numbers in this main function
+        // i still think it's to check every digit just to make sure
+        if(GetAsyncKeyState(ENTER) == PRESSED) {
+            if(checkNumbers(short_buffer)) {
+                input_error_iterator = 0;
+                sscanf_s(short_buffer, "%d", &safe_code);
+                show_message = 0;
+            } else {
+                input_error_iterator++;
+                if(input_error_iterator > 4) break;
+                show_message = 0;
+            }
+
+            if(!input_error_iterator) switch(safe_code) {
+                case 1:
+                    addBook();
+                    break;
+                
+                
+                default:
+                    command_unknow++;
+                    break;
+            }
+        }
 
         // iterates throught the number keys to check if one is pressed
         for(int key = ZERO; key <= NINE; key++) {
             if(GetAsyncKeyState(key) == PRESSED) {
                 if(index_iterator == 2) {
-                    show_message--;
+                    show_message = 0;
                     continue;
                 }
 
@@ -188,30 +210,6 @@ int main() {
             }
         }
 
-        if(GetAsyncKeyState(BACKSPACE) == PRESSED) {
-            short_buffer[index_iterator] = '\0';
-            index_iterator--;
-            continue;
-        }
-
-        if(GetAsyncKeyState(ENTER) == PRESSED) {
-            if(checkNumbers(short_buffer)) {
-                input_error_iterator = 0;
-                sscanf_s(short_buffer, "%d", &safe_code);
-                show_message--;
-            } else {
-                input_error_iterator++;
-                if(input_error_iterator > 4) break;
-                show_message--;
-            }
-
-            if(!input_error_iterator) switch(safe_code) {
-                case 1: addBook(); break;
-                
-                case 99: return 420;
-                default: printf_s("%s%sCommand not recognized.\n%s", BOLD, YELLOW, RESET); break;
-            }
-        }
     }
 
     return 0;
