@@ -38,17 +38,19 @@
 #define NINE      57   // Códigos ASCII para o keyListener
 #define PRESSED -32767 // RETURN da API do Windows
 
-#define CLEAR  "\e[1;1H\e[2J" // Padrões ANSI para manipular o terminal
-#define CLINE  "\33[2K\r"     // Padrões ANSI para manipular o terminal
-#define RESET  "\033[0m"      // Padrões ANSI para manipular o terminal
-#define BOLD   "\033[1m"      // Padrões ANSI para manipular o terminal
+#define CLEAR  "\e[1;1H\e[2J"   // Padrões ANSI para manipular o terminal
+#define CLINE  "\33[2K\r"       // Padrões ANSI para manipular o terminal
+#define RESET  "\033[0m"        // Padrões ANSI para manipular o terminal
+#define BOLD   "\033[1m"        // Padrões ANSI para manipular o terminal
 
-#define RED    "\033[31m"     // Padrões ANSI para manipular o terminal
-#define GREEN  "\033[32m"     // Padrões ANSI para manipular o terminal
-#define YELLOW "\033[33m"     // Padrões ANSI para manipular o terminal
-#define BLUE   "\033[34m"     // Padrões ANSI para manipular o terminal
-#define PURPLE "\033[35m"     // Padrões ANSI para manipular o terminal
-#define AQUA   "\033[36m"     // Padrões ANSI para manipular o terminal
+#define FAINT  "\033[2m"        // Padrões ANSI para manipular o terminal
+#define GRAY   "\033[38;5;245m" // Padrões ANSI para manipular o terminal
+#define RED    "\033[31m"       // Padrões ANSI para manipular o terminal
+#define GREEN  "\033[32m"       // Padrões ANSI para manipular o terminal
+#define YELLOW "\033[33m"       // Padrões ANSI para manipular o terminal
+#define BLUE   "\033[34m"       // Padrões ANSI para manipular o terminal
+#define PURPLE "\033[35m"       // Padrões ANSI para manipular o terminal
+#define AQUA   "\033[36m"       // Padrões ANSI para manipular o terminal
 
 typedef struct {
     int code;
@@ -111,22 +113,20 @@ void addBook() {
 } // End addBooks
 
 int main() {
-    fflush(stdin);
     int input_error_iterator = 0;
     int index_iterator = 0;
     int show_message = 0;
     int command_unknow = 0;
 
     char short_buffer[3] = {0};
-    char number_pressed = '\0';
     short_buffer[2] = '\0';
+    char number_pressed = '\0';
 
     while(1) {
         int safe_code = 0;
 
         if(!show_message) {
             clearTerminal();
-            printf_s("%d\n\n", input_error_iterator);
             if(input_error_iterator) {
                 printf_s("%s%sFound input mismatch, retype. (errors to finish application: %d)%s\n",
                 BOLD,
@@ -149,17 +149,53 @@ int main() {
             printf_s("%s%s[ESC]%s: Finish application.\n\n", BOLD, PURPLE, RESET);
             show_message++;
         }
+
         Sleep(1);
 
-        char* option_selected = "";
+         if(checkNumbers(short_buffer)) {
+            sscanf_s(short_buffer, "%d", &safe_code);
+         }
 
-        // if(checkNumbers(short_buffer)) {
-        //     sscanf_s(short_buffer, "%d", &number_pressed);
-        //     if(number_pressed == 1) option_selected = "addBook()";
-        // }
+         switch(safe_code) {
+            case 1:
+                printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "add new book", RESET);
+                break;
+            case 2:
+                printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "list all books", RESET);
+                break;
+            case 3:
+                printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "search book by code", RESET);
+                break;
+            case 4:
+                printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "search book by name", RESET);
+                break;
+            case 5:
+                printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "search book by keyword", RESET);
+                break;
+            case 6:
+                printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "change book data", RESET);
+                break;
+            case 7:
+                printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "remove book", RESET);
+                break;
+            case 8:
+                printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "add new client", RESET);
+                break;
+            case 9:
+                printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "list all clients", RESET);
+                break;
+            case 10:
+                printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "make a sell", RESET);
+                break;
+            case 11:
+                printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "list all sellings", RESET);
+                break;
+            default:
+                printf_s("%s%s%s> %s%s", CLINE, BOLD, AQUA, short_buffer, RESET);
+         }
 
-        printf_s("%s%s%s> %s%s%s%s%s", CLINE, BOLD, AQUA, RESET, short_buffer);
 
+        // printf_s("%s%s%s> %s", CLINE, BOLD, AQUA, RESET, short_buffer);
 
         if(GetAsyncKeyState(ESC) == PRESSED) break;
 
@@ -188,7 +224,6 @@ int main() {
                 case 1:
                     addBook();
                     break;
-                
                 
                 default:
                     command_unknow++;
