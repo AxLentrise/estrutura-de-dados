@@ -157,41 +157,18 @@ int main() {
          }
 
          switch(safe_code) {
-            case 1:
-                printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "add new book", RESET);
-                break;
-            case 2:
-                printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "list all books", RESET);
-                break;
-            case 3:
-                printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "search book by code", RESET);
-                break;
-            case 4:
-                printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "search book by name", RESET);
-                break;
-            case 5:
-                printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "search book by keyword", RESET);
-                break;
-            case 6:
-                printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "change book data", RESET);
-                break;
-            case 7:
-                printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "remove book", RESET);
-                break;
-            case 8:
-                printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "add new client", RESET);
-                break;
-            case 9:
-                printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "list all clients", RESET);
-                break;
-            case 10:
-                printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "make a sell", RESET);
-                break;
-            case 11:
-                printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "list all sellings", RESET);
-                break;
-            default:
-                printf_s("%s%s%s> %s%s", CLINE, BOLD, AQUA, short_buffer, RESET);
+            case 1:printf_s("%s%s%s> %s %s%s%s%s",  CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "add new book", RESET);break;
+            case 2:printf_s("%s%s%s> %s %s%s%s%s",  CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "list all books", RESET);break;
+            case 3:printf_s("%s%s%s> %s %s%s%s%s",  CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "search book by code", RESET);break;
+            case 4:printf_s("%s%s%s> %s %s%s%s%s",  CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "search book by name", RESET);break;
+            case 5:printf_s("%s%s%s> %s %s%s%s%s",  CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "search book by keyword", RESET);break;
+            case 6:printf_s("%s%s%s> %s %s%s%s%s",  CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "change book data", RESET);break;
+            case 7:printf_s("%s%s%s> %s %s%s%s%s",  CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "remove book", RESET);break;
+            case 8:printf_s("%s%s%s> %s %s%s%s%s",  CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "add new client", RESET);break;
+            case 9:printf_s("%s%s%s> %s %s%s%s%s",  CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "list all clients", RESET);break;
+            case 10:printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "make a sell", RESET);break;
+            case 11:printf_s("%s%s%s> %s %s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, "list all sellings", RESET);break;
+            default:printf_s("%s%s%s> %s%s", CLINE, BOLD, AQUA, short_buffer, RESET);break;
          }
 
 
@@ -200,10 +177,10 @@ int main() {
         if(GetAsyncKeyState(ESC) == PRESSED) break;
 
         if(GetAsyncKeyState(BACKSPACE) == PRESSED) {
-            short_buffer[index_iterator] = '\0';
             if(index_iterator) {
                 index_iterator--;
             }
+            short_buffer[index_iterator] = '\0';
             continue;
         }
 
