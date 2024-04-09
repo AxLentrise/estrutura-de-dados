@@ -22,21 +22,21 @@
 #define READ "rb"               // Config
 #define WRITE "ab"              // Config
 
-#define BACKSPACE 8    // Códigos ASCII para o keyListener
-#define ESC       27   // Códigos ASCII para o keyListener
-#define ENTER     13   // Códigos ASCII para o keyListener
-#define SPACE     32   // Códigos ASCII para o keyListener
-#define ZERO      48   // Códigos ASCII para o keyListener
-#define ONE       49   // Códigos ASCII para o keyListener
-#define TWO       50   // Códigos ASCII para o keyListener
-#define THREE     51   // Códigos ASCII para o keyListener
-#define FOUR      52   // Códigos ASCII para o keyListener
-#define FIVE      53   // Códigos ASCII para o keyListener
-#define SIX       54   // Códigos ASCII para o keyListener
-#define SEVEN     55   // Códigos ASCII para o keyListener
-#define EIGHT     56   // Códigos ASCII para o keyListener
-#define NINE      57   // Códigos ASCII para o keyListener
-#define PRESSED -32767 // RETURN da API do Windows
+#define BACKSPACE 8             // Códigos ASCII para o keyListener
+#define ESC       27            // Códigos ASCII para o keyListener
+#define ENTER     13            // Códigos ASCII para o keyListener
+#define SPACE     32            // Códigos ASCII para o keyListener
+#define ZERO      48            // Códigos ASCII para o keyListener
+#define ONE       49            // Códigos ASCII para o keyListener
+#define TWO       50            // Códigos ASCII para o keyListener
+#define THREE     51            // Códigos ASCII para o keyListener
+#define FOUR      52            // Códigos ASCII para o keyListener
+#define FIVE      53            // Códigos ASCII para o keyListener
+#define SIX       54            // Códigos ASCII para o keyListener
+#define SEVEN     55            // Códigos ASCII para o keyListener
+#define EIGHT     56            // Códigos ASCII para o keyListener
+#define NINE      57            // Códigos ASCII para o keyListener
+#define PRESSED -32767          // RETURN da API do Windows
 
 #define CLEAR  "\e[1;1H\e[2J"   // Padrões ANSI para manipular o terminal
 #define CLINE  "\33[2K\r"       // Padrões ANSI para manipular o terminal
@@ -45,7 +45,7 @@
 #define FAINT  "\033[2m"        // Padrões ANSI para manipular o terminal
 #define ITALIC  "\033[3m"       // Padrões ANSI para manipular o terminal
 
-#define GRAY   "\033[38;5;245m" // Padrões ANSI para manipular o terminal
+#define GRAY   "\033[38;5;255m" // Padrões ANSI para manipular o terminal
 #define RED    "\033[31m"       // Padrões ANSI para manipular o terminal
 #define GREEN  "\033[32m"       // Padrões ANSI para manipular o terminal
 #define YELLOW "\033[33m"       // Padrões ANSI para manipular o terminal
@@ -102,13 +102,15 @@ void addBook() {
 
     book sbook;
     FILE *fptr;
+    errno_t err;
 
-    if((fptr = fopen(BOOKS, WRITE)) == NULL) {
-        printf_s("%s%sError opening file, check path.%s\n", BOLD, RED, RESET);
-        return;
+    if((err = fopen_s(&fptr, BOOKS, "no")) != 0) {
+
+
+    } else {
+        printf_s("File exception: %s", err);
+        Sleep(10000);
     }
-
-    
 
 
 } // End addBooks
@@ -156,7 +158,7 @@ int main() {
          if(checkNumbers(short_buffer)) {
             sscanf_s(short_buffer, "%d", &safe_code);
          }
-
+  
          switch(safe_code) {
             case 1:printf_s("%s%s%s> %s %s%s%s%s%s",  CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, ITALIC, "add new book", RESET);break;
             case 2:printf_s("%s%s%s> %s %s%s%s%s%s",  CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, ITALIC, "list all books", RESET);break;
