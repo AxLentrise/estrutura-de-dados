@@ -26,6 +26,9 @@
 #define ESC       27            // Códigos ASCII para o keyListener
 #define ENTER     13            // Códigos ASCII para o keyListener
 #define SPACE     32            // Códigos ASCII para o keyListener
+#define UP        38            // Códigos ASCII para o keyListener
+#define DOWN      40            // Códigos ASCII para o keyListener
+
 #define ZERO      48            // Códigos ASCII para o keyListener
 #define ONE       49            // Códigos ASCII para o keyListener
 #define TWO       50            // Códigos ASCII para o keyListener
@@ -46,6 +49,7 @@
 #define ITALIC  "\033[3m"       // Padrões ANSI para manipular o terminal
 
 #define GRAY   "\033[38;5;255m" // Padrões ANSI para manipular o terminal
+#define DGRAY  "\033[38;5;245m" // Padrões ANSI para manipular o terminal
 #define RED    "\033[31m"       // Padrões ANSI para manipular o terminal
 #define GREEN  "\033[32m"       // Padrões ANSI para manipular o terminal
 #define YELLOW "\033[33m"       // Padrões ANSI para manipular o terminal
@@ -95,25 +99,43 @@ int checkNumbers(char* buffer) {
 
 void addBook() {
     clearTerminal();
-    int input_error_iterator = 0;
+    int add_book_error_iterator = 0;
     int read_code = 0;
     int read_name = 0;
     int read_price = 0;
 
+    char buffer[MAX];
+
     book sbook;
     FILE *fptr;
-    errno_t err;
 
-    if((err = fopen_s(&fptr, BOOKS, "no")) != 0) {
-
-
-    } else {
-        printf_s("File exception: %s", err);
-        Sleep(10000);
+    if((fopen_s(&fptr, BOOKS, WRITE)) != 0) {
+        printf_s("%s%sError opening file.%s\n", BOLD, RED, RESET);
+        return;
     }
 
+    printf_s("%sEnter the book name:%s ", BOLD, AQUA);
+    if((fgets(buffer, sizeof(buffer), stdin)) != NULL) {
+        buffer[strlen(buffer)-1] = '\0';
+        sscanf_s(buffer, "%s", &sbook.name, sizeof(sbook.name));
+        read_name++;
+        clearTerminal();
+    } else {
+        printf_s("%s%sFunction fgets() error.%s\n", BOLD, RED, RESET);
+    }
 
+    while(0) {
+        Sleep(1);
+
+    }
+
+    fclose(fptr);
 } // End addBooks
+
+void listBooks() {
+
+    FILE *fptr;
+}
 
 int main() {
     int input_error_iterator = 0;
@@ -124,10 +146,9 @@ int main() {
     char short_buffer[3] = {0};
     short_buffer[2] = '\0';
     char number_pressed = '\0';
+    int safe_code = 0;
 
     while(1) {
-        int safe_code = 0;
-
         if(!show_message) {
             clearTerminal();
             if(input_error_iterator) {
@@ -149,50 +170,53 @@ int main() {
             
             printf_s("%s%s---------- Library ----------%s\n\n", BOLD, AQUA, RESET);
             printf_s("%s%s[1]%s: Add new book;\n", BOLD, AQUA, RESET);
+            printf_s("%s%s[2]%s: List all books;\n", BOLD, AQUA, RESET);
             printf_s("%s%s[ESC]%s: Finish application.\n\n", BOLD, PURPLE, RESET);
             show_message++;
         }
 
         Sleep(1);
 
-         if(checkNumbers(short_buffer)) {
-            sscanf_s(short_buffer, "%d", &safe_code);
-         }
-  
-         switch(safe_code) {
-            case 1:printf_s("%s%s%s> %s %s%s%s%s%s",  CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, ITALIC, "add new book", RESET);break;
-            case 2:printf_s("%s%s%s> %s %s%s%s%s%s",  CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, ITALIC, "list all books", RESET);break;
-            case 3:printf_s("%s%s%s> %s %s%s%s%s%s",  CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, ITALIC, "search book by code", RESET);break;
-            case 4:printf_s("%s%s%s> %s %s%s%s%s%s",  CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, ITALIC, "search book by name", RESET);break;
-            case 5:printf_s("%s%s%s> %s %s%s%s%s%s",  CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, ITALIC, "search book by keyword", RESET);break;
-            case 6:printf_s("%s%s%s> %s %s%s%s%s%s",  CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, ITALIC, "change book data", RESET);break;
-            case 7:printf_s("%s%s%s> %s %s%s%s%s%s",  CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, ITALIC, "remove book", RESET);break;
-            case 8:printf_s("%s%s%s> %s %s%s%s%s%s",  CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, ITALIC, "add new client", RESET);break;
-            case 9:printf_s("%s%s%s> %s %s%s%s%s%s",  CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, ITALIC, "list all clients", RESET);break;
-            case 10:printf_s("%s%s%s> %s %s%s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, ITALIC, "make a sell", RESET);break;
-            case 11:printf_s("%s%s%s> %s %s%s%s%s%s", CLINE, BOLD, AQUA, short_buffer, GRAY, FAINT, ITALIC, "list all sellings", RESET);break;
-            default:printf_s("%s%s%s> %s%s", CLINE, BOLD, AQUA, short_buffer, RESET);break;
-         }
-
-
-        // printf_s("%s%s%s> %s", CLINE, BOLD, AQUA, RESET, short_buffer);
+        if(safe_code) switch(safe_code) {
+            case 1: printf_s("%s%s%s[%d] > %s%s%s%s%s", CLINE, BOLD, AQUA, safe_code, GRAY, FAINT, ITALIC, "add new book", RESET);break;
+            case 2: printf_s("%s%s%s[%d] > %s%s%s%s%s", CLINE, BOLD, AQUA, safe_code, GRAY, FAINT, ITALIC, "list all books", RESET);break;
+            case 3: printf_s("%s%s%s[%d] > %s%s%s%s%s", CLINE, BOLD, AQUA, safe_code, GRAY, FAINT, ITALIC, "search book by code", RESET);break;
+            case 4: printf_s("%s%s%s[%d] > %s%s%s%s%s", CLINE, BOLD, AQUA, safe_code, GRAY, FAINT, ITALIC, "search book by name", RESET);break;
+            case 5: printf_s("%s%s%s[%d] > %s%s%s%s%s", CLINE, BOLD, AQUA, safe_code, GRAY, FAINT, ITALIC, "search book by keyword", RESET);break;
+            case 6: printf_s("%s%s%s[%d] > %s%s%s%s%s", CLINE, BOLD, AQUA, safe_code, GRAY, FAINT, ITALIC, "change book data", RESET);break;
+            case 7: printf_s("%s%s%s[%d] > %s%s%s%s%s", CLINE, BOLD, AQUA, safe_code, GRAY, FAINT, ITALIC, "remove book", RESET);break;
+            case 8: printf_s("%s%s%s[%d] > %s%s%s%s%s", CLINE, BOLD, AQUA, safe_code, GRAY, FAINT, ITALIC, "add new client", RESET);break;
+            case 9: printf_s("%s%s%s[%d] > %s%s%s%s%s", CLINE, BOLD, AQUA, safe_code, GRAY, FAINT, ITALIC, "list all clients", RESET);break;
+            case 10:printf_s("%s%s%s[%d] > %s%s%s%s%s", CLINE, BOLD, AQUA, safe_code, GRAY, FAINT, ITALIC, "make a sell", RESET);break;
+            case 11:printf_s("%s%s%s[%d] > %s%s%s%s%s", CLINE, BOLD, AQUA, safe_code, GRAY, FAINT, ITALIC, "list all sellings", RESET);break;
+            default:printf_s("%s%s%s[%d] > %s%s%s%s%s", CLINE, BOLD, RED,  safe_code, GRAY, FAINT, ITALIC, "unknow code", RESET);break;
+        } else {
+            printf_s("%s%s%s[ ] > %s", CLINE, BOLD, GRAY, RESET);
+        }
 
         if(GetAsyncKeyState(ESC) == PRESSED) break;
-
+        if(GetAsyncKeyState(UP) == PRESSED) if(safe_code > 1) safe_code--;
+        if(GetAsyncKeyState(DOWN) == PRESSED) if(safe_code < 12) safe_code++;
+        
+        // TODO - Arrumar o indexador para apagar o caractere quando ele foi incrementado pelo navegador UP/DONW
         if(GetAsyncKeyState(BACKSPACE) == PRESSED) {
             if(index_iterator) {
                 index_iterator--;
+            } else {
+                safe_code = 0;
             }
             short_buffer[index_iterator] = '\0';
+            
+            if(checkNumbers(short_buffer)) {
+                sscanf_s(short_buffer, "%d", &safe_code);
+            }
             continue;
         }
 
-        // Even tho i can only add register numbers in this main function
-        // i still think it's to check every digit just to make sure
+        // Even tho i can only register numbers in this main function
+        // i still think it's okay to check every digit just to make sure
         if(GetAsyncKeyState(ENTER) == PRESSED) {
             if(checkNumbers(short_buffer)) {
-                input_error_iterator = 0;
-                sscanf_s(short_buffer, "%d", &safe_code);
                 show_message = 0;
             } else {
                 input_error_iterator++;
@@ -204,7 +228,8 @@ int main() {
                 case 1:
                     addBook();
                     break;
-                
+                case 2:
+
                 default:
                     command_unknow++;
                     break;
@@ -222,6 +247,9 @@ int main() {
                 number_pressed = (char)key;
                 short_buffer[index_iterator] = number_pressed;
                 index_iterator++;
+                if(checkNumbers(short_buffer)) {
+                    sscanf_s(short_buffer, "%d", &safe_code);
+                }
             }
         }
     }
