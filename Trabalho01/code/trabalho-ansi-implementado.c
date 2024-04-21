@@ -1236,18 +1236,18 @@ int main() {
                 command_unknow--;
             }
             
-            printf_s("%s%s---------- Livraria ----------%s\n\n", BOLD, AQUA, RESET);
-            printf_s("            .--.                      .---.");
-            printf_s("        .---|__|              .-.     |~~~|");
-            printf_s("        .--|===|--|_          |_|     |~~~|--.");
-            printf_s("        |  |===|  |'\\     .---!~|  .--|   |--|");
-            printf_s("        |%%|   |  |.'\\    |===| |--|%%|   |  |");
-            printf_s("        |%%|   |  |\\.'\\   |   | |__|  |   |  |");
-            printf_s("        |  |   |  | \\  \\  |===| |==|  |   |  |");
-            printf_s("        |  |   |__|  \\.'\\ |   |_|__|  |~~~|__|");
-            printf_s("        |  |===|--|   \\.'\\|===|~|--|%%|~~~|--|");
-            printf_s("        ^--^---'--^    `-'`---^-^--^--^---'--' ");
+            printf_s("%s%s            .--.                      .---.               %s\n", BOLD, RED, RESET);
+            printf_s("%s%s        .---|__|              .-.     |~~~|               %s\n", BOLD, RED, RESET);
+            printf_s("%s%s        .--|===|--|_          |_|     |~~~|--.            %s\n", BOLD, YELLOW, RESET);
+            printf_s("%s%s        |  |===|  |'\\     .---!~|  .--|   |--|           %s\n", BOLD, YELLOW, RESET);
+            printf_s("%s%s        |%%%%|   |  |.'\\    |===| |--|%%%%|   |  |       %s\n", BOLD, GREEN, RESET);
+            printf_s("%s%s        |%%%%|   |  |\\.'\\   |   | |__|  |   |  |        %s\n", BOLD, GREEN, RESET);
+            printf_s("%s%s        |  |   |  | \\  \\  |===| |==|  |   |  |          %s\n", BOLD, BLUE, RESET);
+            printf_s("%s%s        |  |   |__|  \\.'\\ |   |_|__|  |~~~|__|          %s\n", BOLD, BLUE, RESET);
+            printf_s("%s%s        |  |===|--|   \\.'\\|===|~|--|%%%%|~~~|--|        %s\n", BOLD, PURPLE, RESET);
+            printf_s("%s%s        ^--^---'--^    `-'`---^-^--^--^---'--'            %s\n", BOLD, PURPLE, RESET);
 
+            printf_s("%s%s\n\n        |||||||||||||| Livraria ||||||||||||||%s\n\n", BOLD, AQUA, RESET);
             // Livros
             printf_s("%s%s[1]%s:  Adicionar Livro;\n", BOLD, AQUA, RESET);
             printf_s("%s%s[2]%s:  Exibir Livros;\n", BOLD, AQUA, RESET);
