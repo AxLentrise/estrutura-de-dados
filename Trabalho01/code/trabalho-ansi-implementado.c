@@ -1206,9 +1206,6 @@ void listClientsWithSellings() {
     fclose(fptr);
 } // Fim listClientsWithSellings
 
-// printf_s("%s%sCodigo   Nome                 Email           Fone        %s", BOLD, AQUA, RESET);
-// printf_s("\n%s%-8d %-20.20s %-15.15s %-12.12s%s", BOLD, sclient.code, sclient.name, sclient.email, sclient.fone, RESET);
-
 int main() {
     int running = 1;
     int input_error_iterator = 0;
