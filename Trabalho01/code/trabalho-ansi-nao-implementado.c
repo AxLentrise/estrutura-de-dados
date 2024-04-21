@@ -819,22 +819,27 @@ client searchClient(int code) {
 
 book searchBook(int code) {
 
-    FILE *fptr;
+    FILE *fbook;
     book sbook;
     int found = 0;
-    if((fopen_s(&fptr, BOOKS, READ))) {
+    int index = 0;
+
+    if((fopen_s(&fbook, BOOKS, READ))) {
         printf_s("Erro abrindo o arquivo.\n");
         printf_s("Pressione qualquer tecla para continuar.");
         getchar();
-        fclose(fptr);
+        fclose(fbook);
         return;
     }
 
-    while((!found) & (fread_s(&sbook, sizeof(book), sizeof(book), 1, fptr))) {
-        if(sbook.code == code) found++;
+    while((!found) & (fread_s(&sbook, sizeof(book), sizeof(book), 1, fbook))) {
+        if(sbook.code == code) {
+            found++;
+            fseek(fbook, -sizeof(book), SEEK_CUR);
+        } else index++;
     }
 
-    fclose(fptr);
+    fclose(fbook);
     if(!found) {
         sbook.code = 0;
         return sbook;
@@ -980,7 +985,7 @@ void addSelling() {
                     printf_s("---------- Escolha o dado a ser Alterado ----------\n\n");
                     printf_s("[1]: Codigo Venda;\n");
                     printf_s("[2]: Codigo Livro;\n");
-                    printf_s("[3]: Codigo Cliente.\n\n");
+                    printf_s("[3]: Codigo Cliente.\n");
                     printf_s("[4]: Quantidade.\n\n");
                     fgets(short_buffer, sizeof(short_buffer), stdin);
 
@@ -1062,18 +1067,17 @@ void listAllClientSellings() {
 
     while((!found) & (fread_s(&sclient, sizeof(client), sizeof(client), 1, fclient))) {
         if(sclient.code == codigo) {
-            printf_s("Codigo   Nome                 Email           Fone        ");
-            printf_s("\n%-8d %-20.20s %-15.15s %-12.12s", sclient.code, sclient.name, sclient.email, sclient.fone);
+            printf_s("\nCliente: %-20.20s   ", sclient.name);
             found++;
         }
     }
 
     if(found) {
-
         int has_selling = 0;
 
         FILE *fsellings;
         selling ssellings;
+        book sbook;
 
         if((fopen_s(&fsellings, SELLINGS, READ))) {
             printf_s("Erro abrindo o arquivo.\n");
@@ -1085,10 +1089,10 @@ void listAllClientSellings() {
 
         while(fread_s(&ssellings, sizeof(selling), sizeof(selling), 1, fsellings)) {
             if(!has_selling) {
-                printf_s("\n\nTodas as compras do cliente\n");
-                printf_s("Venda    Livro    Quantidade");
+                printf_s("\nVenda    Livro    Titulo               Qtde. Preco    Valor pago");
             }
-            printf_s("\n%-8d %-8d %-8d", ssellings.sell_code, ssellings.book_code, ssellings.quantity);
+            sbook = searchBook(ssellings.book_code);
+            printf_s("\n%-8d %-8d %-20.20s %-5d %-8.2f %-6.2f", ssellings.sell_code, ssellings.book_code, sbook.title, ssellings.quantity, sbook.price, sbook.price*ssellings.quantity);
             has_selling++;
         }
 
@@ -1101,7 +1105,7 @@ void listAllClientSellings() {
     fclose(fclient);
 } // Fim listAllClientSellings
 
-int *searchEachIndividualClientSellings(int size) {
+int *searchEachIndividualClientSellings(int size, int book) {
 
     int *client_codes = malloc(size);
     int has_selling = 0;
@@ -1126,7 +1130,7 @@ int *searchEachIndividualClientSellings(int size) {
             if(client_codes[i] == ssellings.client_code) already_added++;
         }
 
-        if(!already_added) {
+        if(!(already_added) & ssellings.book_code == book) {
             client_codes[array_iterator] = ssellings.client_code;
             array_iterator++;
         }
@@ -1150,8 +1154,12 @@ void listClientsWithSellings() {
     clearTerminal();
     int count_clients = 0;
 
+    char short_buffer[SHORT_BUFFER] = {0};
+    int codigo = 0;
+
     FILE *fptr;
     client sclient;
+    book sbook;
 
     if((fopen_s(&fptr, CLIENTS, READ))) {
         printf_s("Erro abrindo o arquivo.\n");
@@ -1165,22 +1173,39 @@ void listClientsWithSellings() {
         count_clients++;
     }
 
-    if(count_clients) {
-        int *client_codes = searchEachIndividualClientSellings(count_clients);
+    while(!codigo) {
+        clearTerminal();
+        printf_s("Digite o codigo do livro que deseja procurar: ");
+        if((fgets(short_buffer, sizeof(short_buffer), stdin)) != NULL) {
+            clearBuffer(short_buffer);
+            if(checkIntNumbers(short_buffer)) sscanf_s(short_buffer, "%d", &codigo);
+        }
+    }
+    
+    sbook = searchBook(codigo);
+    if(sbook.code) {
+        clearTerminal();
+        printf_s("Codigo   Titulo               Preco  ");
+        printf_s("\n%-8d %-20.20s %.2f", sbook.code, sbook.title, sbook.price);
+        if(count_clients) {
+            int *client_codes = searchEachIndividualClientSellings(count_clients, sbook.code);
 
-        if(client_codes != NULL) {
-            fseek(fptr, 0L, SEEK_SET);
-            printf_s("Codigo   Nome                 Email           Fone        ");
-            while(fread_s(&sclient, sizeof(client), sizeof(client), 1, fptr)) {
-                for(int i = 0; i <= count_clients; i++) if(client_codes[i] == sclient.code) {
-                    printf_s("\n%-8d %-20.20s %-15.15s %-12.12s", sclient.code, sclient.name, sclient.email, sclient.fone);
+            if(client_codes != NULL) {
+                fseek(fptr, 0L, SEEK_SET);
+                printf_s("\n\nCodigo   Nome                 Email           Fone        ");
+                while(fread_s(&sclient, sizeof(client), sizeof(client), 1, fptr)) {
+                    for(int i = 0; i <= count_clients; i++) if(client_codes[i] == sclient.code) {
+                        printf_s("\n%-8d %-20.20s %-15.15s %-12.12s", sclient.code, sclient.name, sclient.email, sclient.fone);
+                    }
+
                 }
 
+                free(client_codes);
             }
+        } else printf_s("Nenhum cliente encontrado.");
+    } else printf_s("Livro com codigo [%d] nao encontrado.", codigo);
 
-            free(client_codes);
-        }
-    } else printf_s("Nenhum cliente encontrado.");
+
 
     printf_s("\n\nPressione qualquer tecla para continuar.");
     getchar();

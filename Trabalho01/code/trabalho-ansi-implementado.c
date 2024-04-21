@@ -838,22 +838,27 @@ client searchClient(int code) {
 
 book searchBook(int code) {
 
-    FILE *fptr;
+    FILE *fbook;
     book sbook;
     int found = 0;
-    if((fopen_s(&fptr, BOOKS, READ))) {
-        printf_s("%s%sErro abrindo o arquivo.%s\n", BOLD, RED, RESET);
+    int index = 0;
+
+    if((fopen_s(&fbook, BOOKS, READ))) {
+        printf_s("%s%sErro abrindo o arquivo.\n%s", BOLD, RED, RESET);
         printf_s("%s%sPressione qualquer tecla para continuar.%s", BOLD, YELLOW, RESET);
         getchar();
-        fclose(fptr);
+        fclose(fbook);
         return;
     }
 
-    while((!found) & (fread_s(&sbook, sizeof(book), sizeof(book), 1, fptr))) {
-        if(sbook.code == code) found++;
+    while((!found) & (fread_s(&sbook, sizeof(book), sizeof(book), 1, fbook))) {
+        if(sbook.code == code) {
+            found++;
+            fseek(fbook, -sizeof(book), SEEK_CUR);
+        } else index++;
     }
 
-    fclose(fptr);
+    fclose(fbook);
     if(!found) {
         sbook.code = 0;
         return sbook;
@@ -999,7 +1004,7 @@ void addSelling() {
                     printf_s("%s%s---------- Escolha o dado a ser Alterado ----------%s\n\n", BOLD, YELLOW, RESET);
                     printf_s("%s%s[1]%s: Codigo Venda;\n", BOLD, YELLOW, RESET);
                     printf_s("%s%s[2]%s: Codigo Livro;\n", BOLD, YELLOW, RESET);
-                    printf_s("%s%s[3]%s: Codigo Cliente.\n\n", BOLD, YELLOW, RESET);
+                    printf_s("%s%s[3]%s: Codigo Cliente.\n", BOLD, YELLOW, RESET);
                     printf_s("%s%s[4]%s: Quantidade.\n\n", BOLD, YELLOW, RESET);
                     fgets(short_buffer, sizeof(short_buffer), stdin);
             
@@ -1063,40 +1068,39 @@ void listAllClientSellings() {
     selling sellings;
 
     if((fopen_s(&fclient, CLIENTS, READ))) {
-        printf_s("%s%sErro abrindo o arquivo.%s\n", BOLD, RED, RESET);
-        printf_s("%s%sPressione qualquer tecla para continuar.%s", BOLD, YELLOW, RESET);
+        printf_s("%s%sErro abrindo o arquivo.\n%s", BOLD, RED, RESET);
+        printf_s("%s%sPressione qualquer tecla para continuar.", BOLD, YELLOW, RESET);
         getchar();
         fclose(fclient);
         return;
     }
 
     while(!codigo) {
-        clearTerminal();
         printf_s("%sDigite o codigo do cliente que deseja procurar:%s ", BOLD, AQUA);
         if((fgets(short_buffer, sizeof(short_buffer), stdin)) != NULL) {
             clearBuffer(short_buffer);
             if(checkIntNumbers(short_buffer)) sscanf_s(short_buffer, "%d", &codigo);
+            clearTerminal();
         }
     }
 
     while((!found) & (fread_s(&sclient, sizeof(client), sizeof(client), 1, fclient))) {
         if(sclient.code == codigo) {
-            printf_s("%s%sCodigo   Nome                 Email           Fone        %s", BOLD, AQUA, RESET);
-            printf_s("\n%s%-8d %-20.20s %-15.15s %-12.12s%s", BOLD, sclient.code, sclient.name, sclient.email, sclient.fone, RESET);
+            printf_s("\n%sCliente:%s %-20.20s   ", BOLD, AQUA, sclient.name);
             found++;
         }
     }
 
     if(found) {
-        
         int has_selling = 0;
 
         FILE *fsellings;
         selling ssellings;
+        book sbook;
 
         if((fopen_s(&fsellings, SELLINGS, READ))) {
-            printf_s("%s%sErro abrindo o arquivo.%s\n", BOLD, RED, RESET);
-            printf_s("%s%sPressione qualquer tecla para continuar.%s", BOLD, YELLOW, RESET);
+            printf_s("%s%sErro abrindo o arquivo.\n%s", BOLD, RED, RESET);
+            printf_s("%s%sPressione qualquer tecla para continuar.", BOLD, YELLOW, RESET);
             getchar();
             fclose(fsellings);
             return;
@@ -1104,10 +1108,10 @@ void listAllClientSellings() {
 
         while(fread_s(&ssellings, sizeof(selling), sizeof(selling), 1, fsellings)) {
             if(!has_selling) {
-                printf_s("%s%s\n\nTodas as compras do cliente\n%s", BOLD, YELLOW, RESET);
-                printf_s("%s%sVenda    Livro    Quantidade%s", BOLD, AQUA, RESET);
+                printf_s("\n%s%sVenda    Livro    Titulo               Qtde. Preco    Valor pago%s", BOLD, AQUA, RESET);
             }
-            printf_s("\n%s%-8d %-8d %-8d%s", BOLD, ssellings.sell_code, ssellings.book_code, ssellings.quantity, RESET);
+            sbook = searchBook(ssellings.book_code);
+            printf_s("\n%s%-8d %-8d %-20.20s %-5d %-8.2f %-6.2f%s", BOLD, ssellings.sell_code, ssellings.book_code, sbook.title, ssellings.quantity, sbook.price, sbook.price*ssellings.quantity, RESET);
             has_selling++;
         }
 
@@ -1115,12 +1119,12 @@ void listAllClientSellings() {
         fclose(fsellings);
     } else printf_s("%s%sCliente com codigo [%s%d%s] nao encontrado.%s", BOLD, YELLOW, AQUA, codigo, YELLOW, RESET);
 
-    printf_s("%s%s\n\nPressione qualquer tecla para continuar.%s", BOLD, YELLOW, RESET);
+    printf_s("\n\n%s%sPressione qualquer tecla para continuar.%s", BOLD, YELLOW, RESET);
     getchar();
     fclose(fclient);
 } // Fim listAllClientSellings
 
-int *searchEachIndividualClientSellings(int size) {
+int *searchEachIndividualClientSellings(int size, int book) {
 
     int *client_codes = malloc(size);
     int has_selling = 0;
@@ -1132,8 +1136,8 @@ int *searchEachIndividualClientSellings(int size) {
     selling ssellings;
 
     if((fopen_s(&fptr, SELLINGS, READ))) {
-        printf_s("%s%sErro abrindo o arquivo.%s\n", BOLD, RED, RESET);
-        printf_s("%s%sPressione qualquer tecla para continuar.%s", BOLD, YELLOW, RESET);
+        printf_s("%s%sErro abrindo o arquivo.\n%s", BOLD, RED, RESET);
+        printf_s("%s%sPressione qualquer tecla para continuar.", BOLD, YELLOW, RESET);
         getchar();
         fclose(fptr);
         return;
@@ -1145,7 +1149,7 @@ int *searchEachIndividualClientSellings(int size) {
             if(client_codes[i] == ssellings.client_code) already_added++;
         }
 
-        if(!already_added) {
+        if(!(already_added) & ssellings.book_code == book) {
             client_codes[array_iterator] = ssellings.client_code;
             array_iterator++;
         }
@@ -1158,7 +1162,7 @@ int *searchEachIndividualClientSellings(int size) {
         return client_codes;
     } else {
         printf_s("%s%sNenhuma venda encontrada.%s", BOLD, YELLOW, RESET);
-        printf_s("%s%s\n\nPressione qualquer tecla para continuar.%s", BOLD, YELLOW, RESET);
+        printf_s("\n\n%s%sPressione qualquer tecla para continuar.%s", BOLD, YELLOW, RESET);
         getchar();
 
         return NULL;
@@ -1169,11 +1173,15 @@ void listClientsWithSellings() {
     clearTerminal();
     int count_clients = 0;
 
+    char short_buffer[SHORT_BUFFER] = {0};
+    int codigo = 0;
+
     FILE *fptr;
     client sclient;
+    book sbook;
 
     if((fopen_s(&fptr, CLIENTS, READ))) {
-        printf_s("%s%sErro abrindo o arquivo.%s\n", BOLD, RED, RESET);
+        printf_s("%s%sErro abrindo o arquivo.\n%s", BOLD, RED, RESET);
         printf_s("%s%sPressione qualquer tecla para continuar.%s", BOLD, YELLOW, RESET);
         getchar();
         fclose(fptr);
@@ -1184,24 +1192,39 @@ void listClientsWithSellings() {
         count_clients++;
     }
 
-    if(count_clients) {
-        int *client_codes = searchEachIndividualClientSellings(count_clients);
-
-        if(client_codes != NULL) {
-            fseek(fptr, 0L, SEEK_SET);
-            printf_s("%s%sCodigo   Nome                 Email           Fone        %s", BOLD, AQUA, RESET);
-            while(fread_s(&sclient, sizeof(client), sizeof(client), 1, fptr)) {
-                for(int i = 0; i <= count_clients; i++) if(client_codes[i] == sclient.code) {
-                    printf_s("\n%s%-8d %-20.20s %-15.15s %-12.12s%s", BOLD, sclient.code, sclient.name, sclient.email, sclient.fone, RESET);
-                }
-                
-            }
-
-            free(client_codes);
+    while(!codigo) {
+        clearTerminal();
+        printf_s("%sDigite o codigo do livro que deseja procurar:%s ", BOLD, AQUA);
+        if((fgets(short_buffer, sizeof(short_buffer), stdin)) != NULL) {
+            clearBuffer(short_buffer);
+            if(checkIntNumbers(short_buffer)) sscanf_s(short_buffer, "%d", &codigo);
         }
-    } else printf_s("%s%sNenhum cliente encontrado.%s", BOLD, YELLOW, RESET);
+    }
     
-    printf_s("%s%s\n\nPressione qualquer tecla para continuar.%s", BOLD, YELLOW, RESET);
+    sbook = searchBook(codigo);
+    if(sbook.code) {
+        clearTerminal();
+        printf_s("%s%sCodigo   Titulo               Preco  %s", BOLD, AQUA, RESET);
+        printf_s("\n%-8d %-20.20s %.2f", sbook.code, sbook.title, sbook.price);
+        if(count_clients) {
+            int *client_codes = searchEachIndividualClientSellings(count_clients, sbook.code);
+
+            if(client_codes != NULL) {
+                fseek(fptr, 0L, SEEK_SET);
+                printf_s("\n\n%s%sCodigo   Nome                 Email           Fone        %s", BOLD, AQUA, RESET);
+                while(fread_s(&sclient, sizeof(client), sizeof(client), 1, fptr)) {
+                    for(int i = 0; i <= count_clients; i++) if(client_codes[i] == sclient.code) {
+                        printf_s("\n%s%-8d %-20.20s %-15.15s %-12.12s%s", BOLD, sclient.code, sclient.name, sclient.email, sclient.fone, RESET);
+                    }
+
+                }
+
+                free(client_codes);
+            }
+        } else printf_s("%s%sNenhum cliente encontrado.%s", BOLD, YELLOW, RESET);
+    } else printf_s("%s%sLivro com codigo [%s%d%s] nao encontrado.%s", BOLD, YELLOW, BLUE, codigo, YELLOW, RESET);
+
+    printf_s("\n\n%s%sPressione qualquer tecla para continuar.%s", BOLD, YELLOW, RESET);
     getchar();
     fclose(fptr);
 } // Fim listClientsWithSellings
