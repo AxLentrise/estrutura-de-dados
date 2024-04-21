@@ -1237,6 +1237,17 @@ int main() {
             }
             
             printf_s("%s%s---------- Livraria ----------%s\n\n", BOLD, AQUA, RESET);
+            printf_s("            .--.                      .---.");
+            printf_s("        .---|__|              .-.     |~~~|");
+            printf_s("        .--|===|--|_          |_|     |~~~|--.");
+            printf_s("        |  |===|  |'\\     .---!~|  .--|   |--|");
+            printf_s("        |%%|   |  |.'\\    |===| |--|%%|   |  |");
+            printf_s("        |%%|   |  |\\.'\\   |   | |__|  |   |  |");
+            printf_s("        |  |   |  | \\  \\  |===| |==|  |   |  |");
+            printf_s("        |  |   |__|  \\.'\\ |   |_|__|  |~~~|__|");
+            printf_s("        |  |===|--|   \\.'\\|===|~|--|%%|~~~|--|");
+            printf_s("        ^--^---'--^    `-'`---^-^--^--^---'--' ");
+
             // Livros
             printf_s("%s%s[1]%s:  Adicionar Livro;\n", BOLD, AQUA, RESET);
             printf_s("%s%s[2]%s:  Exibir Livros;\n", BOLD, AQUA, RESET);
