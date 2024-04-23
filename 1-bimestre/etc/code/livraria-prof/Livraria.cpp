@@ -510,10 +510,15 @@ main(){
 		printf("\n5) Consultar Livro por palavra-chave no Titulo");
 		printf("\n6) Alterar dados do Livro");
 		printf("\n7) Excluir um Livro");
+
+
 		printf("\n8) Cadastrar Cliente");
 		printf("\n9) Listar Todos os Clientes");
+
 		printf("\n10) Efetuar Venda");
 		printf("\n11) Listar Vendas");
+
+		
 		printf("\n12) Listar Livro(s) mais Caro(s)"); // TODO
 		printf("\n13) Aumentar o Preço dos Livros"); // TODO
 		printf("\n14) Listar Todas as compras de um Cliente"); // TODO
