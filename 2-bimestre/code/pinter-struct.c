@@ -20,7 +20,7 @@ int main() {
     fgets(buffer, sizeof(buffer), stdin);
     sscanf_s(buffer, "%d", &p1.age);
 
-    printf_s("[NORMAL] = %s is %d years old\n", p1.name, p1.age);
+    printf_s("[NORMAL]  = %s is %d years old\n", p1.name, p1.age);
     printf_s("[POINTER] = %s is %d years old\n", ptr->name, ptr->age);
 
     getchar();
