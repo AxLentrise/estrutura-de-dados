@@ -1,18 +1,37 @@
+/*
+    int *p, v;
+    
+    Pointers can receive NULL to indicate they dont point to anything:
+        RIGHT    p = NULL;
+
+    Pointers cant attribute NULL to some variable location:
+        WRONG   *p = NULL;
+
+    Pointers can receive memory adress of a variable of the same type:
+        RIGHT    p = &v;
+
+    The memory adress a memory points to cannot receive another memory adress:
+        WRONG    *p = &v;
+
+    A pointer pointing to a memory adress can attribute another value of the same type:
+        RIGHT    *p = v;
+*/
+
 #include <stdio.h>
 
-int main(int agrc, char **argv) {
+int main() {
 
-    int *p;
+    int *p, v;
 
-    int value = 100;
-    int sum;
+    // p = NULL;
 
-    p = &value;
-    sum = *p*2;
+    // *p = NULL;
 
-    printf_s("sum: %d", sum);
+    // p = &v;
 
-    getchar();
+    // *p = &v;
+
+    // *p = v;
 
     return 0;
 }
